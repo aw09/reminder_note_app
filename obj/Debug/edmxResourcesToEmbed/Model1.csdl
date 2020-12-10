@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="db_reminder_appModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="note_category">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="color" Type="Int32" />
+    <NavigationProperty Name="notes" Relationship="db_reminder_appModel.FK_notes_note_category" FromRole="note_category" ToRole="notes" />
+  </EntityType>
+  <EntityType Name="notes">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="id_category" Type="Int32" Nullable="false" />
+    <Property Name="detail" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="last_edited" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="note_category" Relationship="db_reminder_appModel.FK_notes_note_category" FromRole="notes" ToRole="note_category" />
+  </EntityType>
+  <EntityType Name="reminder_category">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="reminders" Relationship="Self.FK_reminders_reminder_category" FromRole="reminder_category" ToRole="reminders" />
+    <Property Name="color" Type="Int32" />
+  </EntityType>
+  <EntityType Name="reminders">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="id_category" Type="Int32" />
+    <Property Name="detail" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="date" Type="DateTime" Precision="0" />
+    <Property Name="time" Type="Time" Precision="7" />
+    <NavigationProperty Name="reminder_category" Relationship="Self.FK_reminders_reminder_category" FromRole="reminders" ToRole="reminder_category" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <Association Name="FK_reminders_reminder_category">
+    <End Role="reminder_category" Type="Self.reminder_category" Multiplicity="0..1" />
+    <End Role="reminders" Type="Self.reminders" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="reminder_category">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="reminders">
+        <PropertyRef Name="id_category" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="db_reminder_appEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="note_category" EntityType="Self.note_category" />
+    <EntitySet Name="notes" EntityType="Self.notes" />
+    <EntitySet Name="reminder_category" EntityType="Self.reminder_category" />
+    <EntitySet Name="reminders" EntityType="Self.reminders" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
+    <AssociationSet Name="FK_reminders_reminder_category" Association="Self.FK_reminders_reminder_category">
+      <End Role="reminder_category" EntitySet="reminder_category" />
+      <End Role="reminders" EntitySet="reminders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_notes_note_category" Association="db_reminder_appModel.FK_notes_note_category">
+      <End Role="note_category" EntitySet="note_category" />
+      <End Role="notes" EntitySet="notes" />
+    </AssociationSet>
+  </EntityContainer>
+  <Association Name="FK_notes_note_category">
+    <End Type="db_reminder_appModel.note_category" Role="note_category" Multiplicity="1" />
+    <End Type="db_reminder_appModel.notes" Role="notes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="note_category">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="notes">
+        <PropertyRef Name="id_category" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>
